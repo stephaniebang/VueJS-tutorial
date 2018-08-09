@@ -7,21 +7,23 @@ new Vue({
     damage: [8, 12],   // damage for normal attack and for special attack
     heal: 10,
     gameEnd: false,
-    eventLog: []   // array of events
+    eventLog: [],   // array of events
+    difficulties: [-2, 2, 5],
+    chosenDiff: 1
   },
 
   methods: {
     attackRound: function(i) {
       // computes attacks
-      var hit = this.monsterAttack();
+      var hit = this.monsterAttack()+this.difficulties[this.chosenDiff];
 
       this.monsterHealth -= this.damage[i];
       this.playerHealth -= hit;
 
       // saves events to eventLog
       this.eventLog.push({ player:  "Player hits monster for "+this.damage[i],
-                      monster: "Monster hits player for "+hit
-                    });
+                           monster: "Monster hits player for "+hit
+                         });
 
       if (this.playerHealth <= 0 || this.monsterHealth <= 0) this.gameEnd = true;
     },
@@ -33,8 +35,10 @@ new Vue({
 
       // saves events to eventLog
       this.eventLog.push({ player:  "Player heals himself for "+this.heal,
-                      monster: "Monster hits player for "+hit
-                    });
+                           monster: "Monster hits player for "+hit
+                         });
+
+      if (this.playerHealth <= 0 || this.monsterHealth <= 0) this.gameEnd = true;
     },
 
     monsterAttack: function() {
@@ -58,12 +62,18 @@ new Vue({
       this.monsterHealth = 100;
       this.gameEnd = false;
       this.eventLog = [];
+    },
+
+    buttonSelected: function(i) {
+      if (i === this.chosenDiff) return "pink";
+
+      return "";
     }
   },
 
   computed: {
     resultMessage: function() {
-      return this.playerHealth <= 0 ? "YOU LOST! MWAHAHAHA" : "YOU WON! YAY! :D";
+      return this.playerHealth <= 0 ? "YOU DIED! MWAHAHAHA" : "YOU WON! YAY! :D";
     }
   }
 });
